@@ -68,7 +68,7 @@ func (t *TimelineUpdater) Parse_RSS() {
 		for i := range rss.Channel.Items {
 			item := rss.Channel.Items[i]
 			if item != t.last_item {
-				msg := "\"" + item.Title + "\" by " + item.Author
+				msg := item.Title + " by " + item.Author
 				t.bot.MsgChannel(msg)
 				t.bot.MsgChannel(item.Link)
 			} else {

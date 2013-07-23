@@ -213,7 +213,7 @@ func TestTimelineUpdator(t *testing.T) {
 
 	// Check to see if the bot sends a message about the first item
 	item := rss.Channel.Items[0]
-	out1 := "PRIVMSG #test-channel :" + "\"" + item.Title + "\" by " + item.Author
+	out1 := "PRIVMSG #test-channel :" + item.Title + " by " + item.Author
 	out2 := "PRIVMSG #test-channel :" + item.Link
 
 	lines := 5
