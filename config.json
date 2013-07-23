@@ -1,0 +1,8 @@
+{
+	"server":"localhost",
+	"port":"5000",
+	"nick":"tally",
+	"channel":"#test-channel",
+	"trac_url":"https://tahoe-lafs.org/trac/tahoe-lafs/",
+	"ignore":["another-bot"]
+}
