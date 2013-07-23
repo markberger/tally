@@ -14,6 +14,7 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+	"time"
 )
 
 // The Action struct represents a possible reaction to a given line.
@@ -32,6 +33,8 @@ type Bot struct {
 	Nick     string
 	Channel  string
 	Trac_URL string
+	Trac_RSS string
+	Interval time.Duration
 	Ignore   []string
 	conn     net.Conn
 
@@ -129,6 +132,8 @@ func signalHandling(bot *Bot) {
 func (bot *Bot) Run() {
 	go signalHandling(bot)
 	bot.SetActions()
+	t := bot.NewTimelineUpdater(bot.Trac_RSS, bot.Interval)
+	go t.Run()
 	reader := bufio.NewReader(bot.conn)
 	tp := textproto.NewReader(reader)
 	for {
