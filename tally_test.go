@@ -6,7 +6,10 @@ import (
 	"log"
 	"net"
 	"net/textproto"
+	"net/http"
 	"testing"
+	"encoding/xml"
+	"io/ioutil"
 )
 
 type server struct {
@@ -175,6 +178,50 @@ func TestIgnoreList(t *testing.T) {
 	out1 := "PRIVMSG #test-channel :#1382 (immutable peer selection refactoring and enhancements)"
 	out2 := "PRIVMSG #test-channel :https://tahoe-lafs.org/trac/tahoe-lafs/ticket/1382"
 	resp := runTest(5, "another-bot: test #13 check...\n I'm working on ticket #1382\n")
+	assertEqual(t, resp[3], out1)
+	assertEqual(t, resp[4], out2)
+}
+
+func TestTimelineUpdator(t *testing.T) {
+	// Download and parse test RSS feed
+	bot := NewBot()
+	response, err := http.Get(bot.Trac_RSS)
+	if err != nil {
+		t.Errorf("Error downloading RSS feed:\n")
+		t.Errorf("%v\n", err)
+	}
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		t.Errorf("Error reading RSS body:\n")
+		t.Errorf("%v\n", err)
+	}
+	rss := new(RSS)
+	err = xml.Unmarshal(body, rss)
+
+	// Initialize mock server and bot
+	InitLogging()
+	b := make(chan string)
+	s := mockServer("localhost:5000", "")
+	go s.run(b)
+	bot.mockConnect(b)
+
+	// Set last item to be the 2nd item in the test RSS feed and run
+	u := bot.NewTimelineUpdater(bot.Trac_RSS, bot.Interval)
+	u.last_item = rss.Channel.Items[1]
+	go u.Run()
+
+	// Check to see if the bot sends a message about the first item
+	item := rss.Channel.Items[0]
+	out1 := "PRIVMSG #test-channel :" + "\"" + item.Title + "\" by " + item.Author
+	out2 := "PRIVMSG #test-channel :" + item.Link
+
+	lines := 5
+	for i := 0; i < lines; i++ {
+		<-b
+	}
+
+	resp := s.recv
 	assertEqual(t, resp[3], out1)
 	assertEqual(t, resp[4], out2)
 }

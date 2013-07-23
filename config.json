@@ -4,5 +4,7 @@
 	"nick":"tally",
 	"channel":"#test-channel",
 	"trac_url":"https://tahoe-lafs.org/trac/tahoe-lafs/",
-	"ignore":["another-bot"]
+	"ignore":["another-bot"],
+	"interval":1,
+	"trac_rss":"https://tahoe-lafs.org/trac/tahoe-lafs/timeline?ticket=on&ticket_details=on&changeset=on&milestone=on&wiki=on&max=50&authors=&daysback=90&format=rss"
 }
