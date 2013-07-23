@@ -92,6 +92,10 @@ func (bot *Bot) MsgChannel(line string) {
 	bot.Send("PRIVMSG " + bot.Channel + " :" + line + "\n")
 }
 
+func (bot *Bot) PrivateMsg(user string, line string) {
+	bot.Send("PRIVMSG " + user + " :" + line + "\n")
+}
+
 func (bot *Bot) parse(line string) {
 	for i := range bot.Ignore {
 		if strings.Contains(line, bot.Ignore[i]) {
