@@ -1,0 +1,10 @@
+{
+	"server":"",
+	"port":"",
+	"nick":"",
+	"channel":"",
+	"trac_url":"",
+	"ignore":[""],
+	"interval":60,
+	"trac_rss":""
+}
