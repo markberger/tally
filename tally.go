@@ -141,9 +141,10 @@ func (bot *Bot) Run() {
 	reader := bufio.NewReader(bot.conn)
 	tp := textproto.NewReader(reader)
 	for {
-		line, error := tp.ReadLine()
-		if error != nil {
+		line, err := tp.ReadLine()
+		if err != nil {
 			log.Printf("Error reading line: %s\n", line)
+			log.Fatalf("Error: %v\n", err)
 		} else {
 			bot.parse(line)
 		}
