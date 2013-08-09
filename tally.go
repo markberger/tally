@@ -33,6 +33,7 @@ type Bot struct {
 	Nick     string
 	Channel  string
 	Trac_URL string
+	Tickets  map[string]bool
 	Trac_RSS string
 	Interval time.Duration
 	Ignore   []string
@@ -54,6 +55,7 @@ func NewBot() *Bot {
 	if err != nil {
 		log.Fatal("Error unmarshalling config.json: %v\n\n", err)
 	}
+	bot.Tickets = make(map[string]bool)
 	return bot
 }
 
@@ -166,17 +168,25 @@ func ParseTicket(re *regexp.Regexp, line string) interface{} {
 	return ticket_nums
 }
 
+func removeTicket(bot *Bot, num string) {
+	time.Sleep(5 * time.Minute)
+	bot.Tickets[num] = false
+}
+
 func FetchTickets(bot *Bot, tickets interface{}) {
 	url := bot.Trac_URL + "ticket/"
-	used := make(map[string]bool)
 	ticket_nums := reflect.ValueOf(tickets)
 	for i := 0; i < ticket_nums.Len(); i++ {
 		num := ticket_nums.Index(i).String()
-		if used[num] {
-			continue
+
+		// Check to see if we gave a link to this ticket recently.
+		if bot.Tickets[num] == false {
+			bot.Tickets[num] = true
+			go removeTicket(bot, num)
 		} else {
-			used[num] = true
+			continue
 		}
+
 		dest := url + num
 		resp, err := http.Get(dest)
 		if err != nil {
