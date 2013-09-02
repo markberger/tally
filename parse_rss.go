@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 	"io/ioutil"
 	"log"
-	"time"
 	"net/http"
+	"time"
 )
 
 type RSS struct {
@@ -24,6 +24,7 @@ type Item struct {
 	XMLName xml.Name `xml:"item"`
 	Title   string   `xml:"title"`
 	Author  string   `xml:"creator"`
+	PubDate string   `xml:"pubDate"`
 	Link    string   `xml:"link"`
 }
 
@@ -67,7 +68,7 @@ func (t *TimelineUpdater) Parse_RSS() {
 	} else {
 		for i := range rss.Channel.Items {
 			item := rss.Channel.Items[i]
-			if item != t.last_item {
+			if item.PubDate != t.last_item.PubDate {
 				msg := item.Title + " by " + item.Author
 				t.bot.MsgChannel(msg)
 				t.bot.MsgChannel(item.Link)
