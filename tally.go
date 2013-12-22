@@ -203,7 +203,7 @@ func FetchTickets(bot *Bot, tickets interface{}) {
 		} else {
 			s = s[:300]
 			a := strings.Split(s, "\n")
-			title := strings.TrimLeft(a[7], " ")
+			title := strings.TrimLeft(a[8], " ")
 			bot.MsgChannel(title)
 			bot.MsgChannel(dest)
 		}
