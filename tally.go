@@ -28,16 +28,17 @@ type Action struct {
 }
 
 type Bot struct {
-	Server   string
-	Port     string
-	Nick     string
-	Channel  string
-	Trac_URL string
-	Tickets  map[string]bool
-	Trac_RSS string
-	Interval time.Duration
-	Ignore   []string
-	conn     net.Conn
+	Server     string
+	Port       string
+	Nick       string
+	Channel    string
+	Trac_URL   string
+	GithubRepo string
+	Tickets    map[string]bool
+	Trac_RSS   string
+	Interval   time.Duration
+	Ignore     []string
+	conn       net.Conn
 
 	actions []*Action
 }
@@ -138,8 +139,14 @@ func signalHandling(bot *Bot) {
 func (bot *Bot) Run() {
 	go signalHandling(bot)
 	bot.SetActions()
+
 	t := bot.NewTimelineUpdater(bot.Trac_RSS, bot.Interval)
 	go t.Run()
+	if bot.GithubRepo != "" {
+		g := bot.NewGithubRepo(bot.GithubRepo, bot.Interval)
+		go g.Run()
+	}
+
 	reader := bufio.NewReader(bot.conn)
 	tp := textproto.NewReader(reader)
 	for {

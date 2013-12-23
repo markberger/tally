@@ -2,14 +2,14 @@ package tally
 
 import (
 	"bufio"
+	"encoding/xml"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
-	"net/textproto"
 	"net/http"
+	"net/textproto"
 	"testing"
-	"encoding/xml"
-	"io/ioutil"
 )
 
 type server struct {
